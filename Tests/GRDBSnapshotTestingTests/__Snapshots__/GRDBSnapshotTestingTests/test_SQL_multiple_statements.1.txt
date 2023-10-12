@@ -1,0 +1,8 @@
+- id: 1
+  name: 'Arthur'
+  score: 1000
+- id: 2
+  name: 'Barbara'
+  score: 500
+
+- maxScore: 1000

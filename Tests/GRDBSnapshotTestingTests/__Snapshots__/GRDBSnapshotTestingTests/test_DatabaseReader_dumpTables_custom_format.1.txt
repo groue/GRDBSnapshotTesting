@@ -1,0 +1,10 @@
+player
+id|teamId|name
+1|FRA|Antoine Dupond
+2|ENG|Owen Farrell
+3||Tartempion
+
+team
+id|name|color
+ENG|England Rugby|white
+FRA|XV de France|blue

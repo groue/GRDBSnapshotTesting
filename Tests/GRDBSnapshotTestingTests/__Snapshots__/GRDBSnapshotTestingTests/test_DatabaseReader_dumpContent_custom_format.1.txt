@@ -1,0 +1,16 @@
+sqlite_master
+CREATE TABLE "player" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "teamId" TEXT REFERENCES "team"("id"), "name" TEXT NOT NULL);
+CREATE INDEX "player_on_teamId" ON "player"("teamId");
+CREATE VIEW "playerAndTeam" AS SELECT player.*, team.name AS teamName
+FROM player
+LEFT JOIN team ON team.id = player.teamId;
+CREATE TABLE "team" ("id" TEXT PRIMARY KEY NOT NULL, "name" TEXT NOT NULL, "color" TEXT NOT NULL);
+
+player
+[{"id":1,"teamId":"FRA","name":"Antoine Dupond"},
+{"id":2,"teamId":"ENG","name":"Owen Farrell"},
+{"id":3,"teamId":null,"name":"Tartempion"}]
+
+team
+[{"id":"ENG","name":"England Rugby","color":"white"},
+{"id":"FRA","name":"XV de France","color":"blue"}]
