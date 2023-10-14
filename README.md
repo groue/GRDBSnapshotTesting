@@ -15,13 +15,29 @@ This package makes it possible to test [GRDB] databases with [SnapshotTesting].
 ```swift
 import GRDB
 import GRDBSnapshotTesting
-import SnapshotTesting
+import InlineSnapshotTesting
 import XCTest
 
 class MyDatabaseTests: XCTestCase {
     func test_full_database_content() throws {
         let dbQueue = try makeMyDatabase()
-        assertSnapshot(of: dbQueue, as: .dumpContent())
+        assertInlineSnapshot(of: dbQueue, as: .dumpContent()) {
+            """
+            sqlite_master
+            CREATE TABLE player (
+              id INTEGER PRIMARY KEY,
+              name TEXT NOT NULL,
+              score INTEGER NOT NULL);
+
+            player
+            - id: 1
+              name: 'Arthur'
+              score: 500
+            - id: 2
+              name: 'Barbara'
+              score: 1000
+            """
+        }
     }
     
     func test_tables() throws {
