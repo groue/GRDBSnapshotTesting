@@ -1,6 +1,6 @@
 # Release Notes
 
-## v0.2.0
+## v0.1.1
 
 Released on 2023/10/13
 
