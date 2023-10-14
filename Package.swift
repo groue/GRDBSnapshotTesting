@@ -39,7 +39,10 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ],
             exclude: [
-              "__Snapshots__",
+                "__Snapshots__",
+            ],
+            resources: [
+                .copy("Fixtures"),
             ]),
     ]
 )
