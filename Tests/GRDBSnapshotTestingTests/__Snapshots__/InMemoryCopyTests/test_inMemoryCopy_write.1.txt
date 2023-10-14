@@ -1,0 +1,16 @@
+sqlite_master
+CREATE TABLE player(
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  score INTEGER NOT NULL);
+
+player
+- id: 1
+  name: 'Arthur'
+  score: 500
+- id: 2
+  name: 'Barbara'
+  score: 1000
+- id: 3
+  name: 'Craig'
+  score: 200

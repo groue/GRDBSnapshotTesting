@@ -1,6 +1,6 @@
 import GRDB
 
-/// A format suited for snapshot testing.
+/// A GRDB dump format suited for snapshot testing.
 public struct SnapshotDumpFormat {
     var firstRow = true
     
@@ -49,6 +49,6 @@ extension SnapshotDumpFormat: DumpFormat {
 }
 
 extension DumpFormat where Self == SnapshotDumpFormat {
-    /// A format suited for snapshot testing.
+    /// A GRDB dump format suited for snapshot testing.
     public static var snapshot: Self { SnapshotDumpFormat() }
 }
