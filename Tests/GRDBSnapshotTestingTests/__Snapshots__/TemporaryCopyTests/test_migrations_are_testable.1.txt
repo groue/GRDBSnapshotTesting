@@ -1,0 +1,19 @@
+sqlite_master
+CREATE TABLE "match" ("id" INTEGER PRIMARY KEY AUTOINCREMENT);
+CREATE TABLE player(
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  score INTEGER NOT NULL);
+CREATE TABLE "team" ("id" INTEGER PRIMARY KEY AUTOINCREMENT);
+
+match
+
+player
+- id: 1
+  name: 'Arthur'
+  score: 500
+- id: 2
+  name: 'Barbara'
+  score: 1000
+
+team
