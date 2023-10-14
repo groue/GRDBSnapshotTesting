@@ -5,14 +5,14 @@ on:
   pull_request:
     paths:
       [
-        "**Package.resolved",
         "**.swift",
         ".github/workflows/run_tests.yml",
       ]
   push:
+    branches:
+      - main
     paths:
       [
-        "**Package.resolved",
         "**.swift",
         ".github/workflows/run_tests.yml",
       ]
