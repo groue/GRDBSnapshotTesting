@@ -10,6 +10,8 @@
 
 This package makes it possible to test [GRDB] databases with [SnapshotTesting].
 
+See the [Documentation] for usage tips and case studies (testing a fresh install, testing a specific migration, etc).
+
 ## Usage
 
 ```swift
@@ -60,8 +62,6 @@ class MyDatabaseTests: XCTestCase {
     }
 }
 ```
-
-For more information, see the [Documentation]. 
 
 [GRDB]: http://github.com/groue/GRDB.swift
 [SnapshotTesting]: https://github.com/pointfreeco/swift-snapshot-testing
