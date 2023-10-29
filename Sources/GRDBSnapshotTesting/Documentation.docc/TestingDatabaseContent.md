@@ -10,7 +10,7 @@ Testing the database content provides a few guarantees. For example:
 - Test that a specific migration performs the expected modifications on particular database fixtures.
 - Test that migrations follow the golden rule of migrations, which is that they are never modified once they have been released on users' devices.
 
-We'll explore how GRDBSnapshotTesting helps addressing those use cases below.
+This article explores how GRDBSnapshotTesting helps addressing those use cases. 
 
 If you are not familiar with migrations and how they help your application evolve its database schema over time, see the [Migrations] guide.
 
@@ -112,9 +112,9 @@ In the example above, fixtures are stored in a "MyPackage/Tests/MyDatabaseTests/
 
 ### Testing the golden rule of migrations
 
-The "golden rule of migrations" is that a migration is never modified once it has been released on users' devices. It is this rule that makes sure that the "version 3" of the database has a clear and unique meaning, and that no user device contains a variation that can break expectations.
+The "golden rule of migrations" is that a migration is never modified once it has been released on users' devices. It is this rule that makes sure that any specific version of the database schema has a clear and unique meaning, and that no user device contains a variation that could break expectations.
 
-There is no way to enforce this rule in code. But you can write tests, as below:
+This rule can be enforced with tests, as below:
 
 ```swift
 import XCTest
@@ -139,20 +139,64 @@ final class MyDatabaseMigrationsTests: XCTestCase {
         assertSnapshot(of: dbQueue, as: .dumpContent())
     }
 
-    func test_that_migration_v3_is_never_modified() throws {
-        // The test for the currently developed migration is expected to fail.
-        // TODO: remove this line when the migration is stabilized.
+    // Add below tests for future migrations.
+}
+```
+
+### How to deal with modifications to the latest migration
+
+The latest migration is frequently modified when you are developing an application feature. Those modifications will make some snapshot tests fail.
+
+In this situation, the recommended technique is to use [`XCTExpectFailure`](https://developer.apple.com/documentation/xctest/3727245-xctexpectfailure).
+
+At the moment of the release, you will look for expected failures in the Xcode test reports. Remove the `XCTExpectFailure` line, and record the definitive snapshots. From now on, all undesired modifications to the latest migration will be detected.
+
+For example:
+
+```swift
+import XCTest
+import GRDB
+import GRDBSnapshotTesting
+import SnapshotTesting
+
+final class MyDatabaseTests: XCTestCase {
+    var migrator: DatabaseMigrator { 
+        // Return the DatabaseMigrator for your database
+    }
+
+    func test_migrate_empty_database_to_latest_version() throws {
+        // TODO: remove this line when the latest migration is stabilized.
         XCTExpectFailure("Schema v3 is in development.")
+
+        // Given an empty and temporary in-memory database,
+        let dbQueue = try DatabaseQueue()
+
+        // When it is migrated to the latest version,
+        try migrator.migrate(dbQueue)
+        
+        // Then it contains the expected schema and content.
+        assertSnapshot(of: dbQueue, as: .dumpContent())
+    }
+}
+
+final class MyDatabaseMigrationsTests: XCTestCase {
+    var migrator: DatabaseMigrator { 
+        // Return the DatabaseMigrator for your database
+    }
+
+    func test_that_migration_v1_is_never_modified() throws { ... }
+    
+    func test_that_migration_v2_is_never_modified() throws { ... }
+
+    func test_that_migration_v3_is_never_modified() throws {
+        // TODO: remove this line when the latest migration is stabilized.
+        XCTExpectFailure("Schema v3 is in development.")
+
         let dbQueue = try DatabaseQueue()
         try migrator.migrate(dbQueue, upTo: "v3")
         assertSnapshot(of: dbQueue, as: .dumpContent())
     }
-}
 ```
-
-Note how the test for the latest migration is marked with `XCTExpectFailure`. This is because a migration is frequently modified when you are developing an application feature. It is only when the feature is completed, and released, that the migration should be locked.
-
-At the moment of the release, you can look for expected failures in the Xcode test reports, remove the `XCTExpectFailure` line, and record the definitive snapshot. Now all modifications to the migration will be spotted by this test.
 
 ## Topics
 
