@@ -110,8 +110,6 @@ In the example above, fixtures are stored in a "MyPackage/Tests/MyDatabaseTests/
 )
 ```
 
-> Tip: You will prefer ``GRDB/DatabaseQueue/temporaryCopy(fromPath:configuration:)`` over ``GRDB/DatabaseQueue/inMemoryCopy(fromPath:configuration:)`` when the tested fixture is too big to fit in memory. 
-
 ### Testing the golden rule of migrations
 
 The "golden rule of migrations" is that a migration is never modified once it has been released on users' devices. It is this rule that makes sure that the "version 3" of the database has a clear and unique meaning, and that no user device contains a variation that can break expectations.
@@ -162,10 +160,5 @@ At the moment of the release, you can look for expected failures in the Xcode te
 
 - ``SnapshotTesting/Snapshotting/dumpContent(format:)``
 - ``SnapshotTesting/Snapshotting/dumpTables(_:format:)``
-
-### Create temporary database copies
-
-- ``GRDB/DatabaseQueue/inMemoryCopy(fromPath:configuration:)``
-- ``GRDB/DatabaseQueue/temporaryCopy(fromPath:configuration:)``
 
 [Migrations]: https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations
