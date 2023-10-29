@@ -78,7 +78,7 @@ extension Snapshotting {
     {
         SimplySnapshotting.lines.pullback { (reader: Value) in
             let stream = SnapshotStream()
-            try! reader.dumpTables(tables, format: format, tableHeader: .always, to: stream)
+            try! reader.dumpTables(tables, format: format, tableHeader: .always, stableOrder: true, to: stream)
             return stream.output
         }
     }
