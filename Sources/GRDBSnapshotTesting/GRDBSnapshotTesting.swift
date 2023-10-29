@@ -9,7 +9,7 @@ extension Snapshotting {
     ///
     /// ```swift
     /// let dbQueue: DatabaseQueue
-    /// assertSnapshot(of: dbQueue, as: .dump())
+    /// assertSnapshot(of: dbQueue, as: .dumpContent())
     /// ```
     ///
     /// Records:
@@ -33,7 +33,8 @@ extension Snapshotting {
     /// > Note: Internal SQLite and GRDB schema objects are not recorded
     /// > (those with a name that starts with "sqlite_" or "grdb_").
     ///
-    /// - parameter format: The output format (a `GRDB.DumpFormat`).
+    /// - parameter format: The output format (a `GRDB.DumpFormat`). Default
+    ///   is ``SnapshotDumpFormat``.
     public static func dumpContent(format: some DumpFormat = .snapshot) -> Snapshotting
     where Value: DatabaseReader, Format == String
     {
@@ -73,7 +74,8 @@ extension Snapshotting {
     /// ```
     ///
     /// - parameter tables: The table names.
-    /// - parameter format: The output format (a `GRDB.DumpFormat`).
+    /// - parameter format: The output format (a `GRDB.DumpFormat`). Default
+    ///   is ``SnapshotDumpFormat``.
     public static func dumpTables(_ tables: [String], format: some DumpFormat = .snapshot) -> Snapshotting
     where Value: DatabaseReader, Format == String
     {
@@ -110,7 +112,8 @@ extension Snapshotting {
     /// ```
     ///
     /// - parameter db: A `GRDB.Database` database connection.
-    /// - parameter format: The output format (a `GRDB.DumpFormat`).
+    /// - parameter format: The output format (a `GRDB.DumpFormat`). Default
+    ///   is ``SnapshotDumpFormat``.
     public static func dump(_ db: Database, format: some DumpFormat = .snapshot) -> Snapshotting
     where Value: FetchRequest, Format == String
     {
@@ -145,7 +148,8 @@ extension Snapshotting {
     /// ```
     ///
     /// - parameter db: A `GRDB.Database` database connection.
-    /// - parameter format: The output format (a `GRDB.DumpFormat`).
+    /// - parameter format: The output format (a `GRDB.DumpFormat`). Default
+    ///   is ``SnapshotDumpFormat``.
     public static func dump(_ db: Database, format: some DumpFormat = .snapshot) -> Snapshotting
     where Value: FetchRequest & OrderedRequest, Format == String
     {
@@ -181,7 +185,8 @@ extension Snapshotting {
     /// ```
     ///
     /// - parameter db: A `GRDB.Database` database connection.
-    /// - parameter format: The output format (a `GRDB.DumpFormat`).
+    /// - parameter format: The output format (a `GRDB.DumpFormat`). Default
+    ///   is ``SnapshotDumpFormat``.
     public static func dump(_ db: Database, format: some DumpFormat = .snapshot) -> Snapshotting
     where Value == SQL, Format == String
     {

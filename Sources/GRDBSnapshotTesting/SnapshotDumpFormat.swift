@@ -1,6 +1,27 @@
 import GRDB
 
-/// A GRDB dump format suited for snapshot testing.
+/// A GRDB dump format suited for snapshot testing, that prints one line
+/// per database value, formatting values as SQL literals.
+///
+/// This format is used by default when you write snapshot tests:
+///
+/// ```swift
+/// let dbQueue: DatabaseQueue
+///
+/// // Default dump format is `SnapshotDumpFormat`
+/// assertSnapshot(of: dbQueue, as: .dumpContent())
+/// ```
+///
+/// You can use other formats as well, but not all of them give good reports
+/// when tests fail due to snapshots mismatch.
+///
+/// ```swift
+/// // Custom dump format
+/// assertSnapshot(of: dbQueue, as: .dumpContent(format: .json()))
+/// ```
+///
+/// See [`GRDB.DumpFormat`](https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/dumpformat)
+/// for more information.
 public struct SnapshotDumpFormat {
     var firstRow = true
     
@@ -49,6 +70,7 @@ extension SnapshotDumpFormat: DumpFormat {
 }
 
 extension DumpFormat where Self == SnapshotDumpFormat {
-    /// A GRDB dump format suited for snapshot testing.
+    /// A GRDB dump format suited for snapshot testing, that prints one line
+    /// per database value, formatting values as SQL literals.
     public static var snapshot: Self { SnapshotDumpFormat() }
 }
