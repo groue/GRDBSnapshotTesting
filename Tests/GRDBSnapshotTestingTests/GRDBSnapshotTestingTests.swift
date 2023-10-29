@@ -82,7 +82,7 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         }
     }
     
-    func test_DatabaseReader_dumpTables() throws {
+    func test_DatabaseReader_dump_single_table() throws {
         let dbQueue = try makeRugbyDatabase()
         assertInlineSnapshot(of: dbQueue, as: .dumpTables(["player"])) {
             """
@@ -99,6 +99,34 @@ final class GRDBSnapshotTestingTests: XCTestCase {
 
             """
         }
+    }
+    
+    func test_DatabaseReader_dump_single_view() throws {
+        let dbQueue = try makeRugbyDatabase()
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["playerAndTeam"])) {
+            """
+            playerAndTeam
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+              teamName: 'XV de France'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+              teamName: 'England Rugby'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+              teamName: NULL
+
+            """
+        }
+    }
+    
+    func test_DatabaseReader_dump_multiple_tables() throws {
+        let dbQueue = try makeRugbyDatabase()
+        
+        // player then team
         assertInlineSnapshot(of: dbQueue, as: .dumpTables(["player", "team"])) {
             """
             player
@@ -122,6 +150,8 @@ final class GRDBSnapshotTestingTests: XCTestCase {
 
             """
         }
+        
+        // team then player
         assertInlineSnapshot(of: dbQueue, as: .dumpTables(["team", "player"])) {
             """
             team
