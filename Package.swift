@@ -36,10 +36,7 @@ let package = Package(
             dependencies: [
                 "GRDBSnapshotTesting",
                 .product(name: "GRDB", package: "GRDB.swift"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ],
-            exclude: [
-                "__Snapshots__",
+                .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
             ],
             resources: [
                 .copy("Fixtures"),

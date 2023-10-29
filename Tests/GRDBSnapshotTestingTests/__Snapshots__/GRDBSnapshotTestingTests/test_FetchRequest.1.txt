@@ -1,9 +1,0 @@
-- id: 1
-  teamId: 'FRA'
-  name: 'Antoine Dupond'
-- id: 2
-  teamId: 'ENG'
-  name: 'Owen Farrell'
-- id: 3
-  teamId: NULL
-  name: 'Tartempion'
