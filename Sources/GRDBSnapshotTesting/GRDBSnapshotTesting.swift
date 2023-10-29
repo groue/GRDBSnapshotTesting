@@ -44,7 +44,8 @@ extension Snapshotting {
         }
     }
     
-    /// A snapshot strategy for comparing the content of database tables.
+    /// A snapshot strategy for comparing the content of database tables
+    /// and views.
     ///
     /// For example:
     ///
