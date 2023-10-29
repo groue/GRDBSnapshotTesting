@@ -18,7 +18,7 @@ let package = Package(
             targets: ["GRDBSnapshotTesting"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.20.1"),
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.21.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.14.1"),
     ],
     targets: [
@@ -36,10 +36,7 @@ let package = Package(
             dependencies: [
                 "GRDBSnapshotTesting",
                 .product(name: "GRDB", package: "GRDB.swift"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ],
-            exclude: [
-                "__Snapshots__",
+                .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
             ],
             resources: [
                 .copy("Fixtures"),

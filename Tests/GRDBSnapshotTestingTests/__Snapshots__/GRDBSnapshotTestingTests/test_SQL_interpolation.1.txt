@@ -1,3 +1,0 @@
-- id: 1
-  teamId: 'FRA'
-  name: 'Antoine Dupond'

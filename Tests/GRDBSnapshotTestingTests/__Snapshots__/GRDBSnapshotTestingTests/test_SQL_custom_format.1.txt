@@ -1,3 +1,0 @@
-1,'FRA','Antoine Dupond'
-2,'ENG','Owen Farrell'
-3,NULL,'Tartempion'

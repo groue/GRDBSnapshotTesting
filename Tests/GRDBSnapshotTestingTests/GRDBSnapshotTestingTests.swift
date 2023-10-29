@@ -1,7 +1,7 @@
 import GRDB
-import XCTest
-import SnapshotTesting
 import GRDBSnapshotTesting
+import InlineSnapshotTesting
+import XCTest
 
 private struct Player: Codable, MutablePersistableRecord {
     static let team = belongsTo(Team.self)
@@ -24,41 +24,213 @@ private struct Team: Codable, PersistableRecord {
 final class GRDBSnapshotTestingTests: XCTestCase {
     func test_DatabaseReader_dumpContent() throws {
         let dbQueue = try makeRugbyDatabase()
-        assertSnapshot(of: dbQueue, as: .dumpContent())
+        assertInlineSnapshot(of: dbQueue, as: .dumpContent()) {
+            """
+            sqlite_master
+            CREATE TABLE "player" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "teamId" TEXT REFERENCES "team"("id"), "name" TEXT NOT NULL);
+            CREATE INDEX "player_on_teamId" ON "player"("teamId");
+            CREATE VIEW "playerAndTeam" AS SELECT player.*, team.name AS teamName
+            FROM player
+            LEFT JOIN team ON team.id = player.teamId;
+            CREATE TABLE "team" ("id" TEXT PRIMARY KEY NOT NULL, "name" TEXT NOT NULL, "color" TEXT NOT NULL);
+
+            player
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+
+            team
+            - id: 'ENG'
+              name: 'England Rugby'
+              color: 'white'
+            - id: 'FRA'
+              name: 'XV de France'
+              color: 'blue'
+
+            """
+        }
     }
     
     func test_DatabaseReader_dumpContent_custom_format() throws {
         let dbQueue = try makeRugbyDatabase()
-        assertSnapshot(of: dbQueue, as: .dumpContent(format: .json()))
+        assertInlineSnapshot(of: dbQueue, as: .dumpContent(format: .json())) {
+            """
+            sqlite_master
+            CREATE TABLE "player" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "teamId" TEXT REFERENCES "team"("id"), "name" TEXT NOT NULL);
+            CREATE INDEX "player_on_teamId" ON "player"("teamId");
+            CREATE VIEW "playerAndTeam" AS SELECT player.*, team.name AS teamName
+            FROM player
+            LEFT JOIN team ON team.id = player.teamId;
+            CREATE TABLE "team" ("id" TEXT PRIMARY KEY NOT NULL, "name" TEXT NOT NULL, "color" TEXT NOT NULL);
+
+            player
+            [{"id":1,"teamId":"FRA","name":"Antoine Dupond"},
+            {"id":2,"teamId":"ENG","name":"Owen Farrell"},
+            {"id":3,"teamId":null,"name":"Tartempion"}]
+
+            team
+            [{"id":"ENG","name":"England Rugby","color":"white"},
+            {"id":"FRA","name":"XV de France","color":"blue"}]
+
+            """
+        }
     }
     
-    func test_DatabaseReader_dumpTables() throws {
+    func test_DatabaseReader_dump_single_table() throws {
         let dbQueue = try makeRugbyDatabase()
-        assertSnapshot(of: dbQueue, as: .dumpTables(["player"]))
-        assertSnapshot(of: dbQueue, as: .dumpTables(["player", "team"]))
-        assertSnapshot(of: dbQueue, as: .dumpTables(["team", "player"]))
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["player"])) {
+            """
+            player
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+
+            """
+        }
+    }
+    
+    func test_DatabaseReader_dump_single_view() throws {
+        let dbQueue = try makeRugbyDatabase()
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["playerAndTeam"])) {
+            """
+            playerAndTeam
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+              teamName: 'XV de France'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+              teamName: 'England Rugby'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+              teamName: NULL
+
+            """
+        }
+    }
+    
+    func test_DatabaseReader_dump_multiple_tables() throws {
+        let dbQueue = try makeRugbyDatabase()
+        
+        // player then team
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["player", "team"])) {
+            """
+            player
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+
+            team
+            - id: 'ENG'
+              name: 'England Rugby'
+              color: 'white'
+            - id: 'FRA'
+              name: 'XV de France'
+              color: 'blue'
+
+            """
+        }
+        
+        // team then player
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["team", "player"])) {
+            """
+            team
+            - id: 'ENG'
+              name: 'England Rugby'
+              color: 'white'
+            - id: 'FRA'
+              name: 'XV de France'
+              color: 'blue'
+
+            player
+            - id: 1
+              teamId: 'FRA'
+              name: 'Antoine Dupond'
+            - id: 2
+              teamId: 'ENG'
+              name: 'Owen Farrell'
+            - id: 3
+              teamId: NULL
+              name: 'Tartempion'
+
+            """
+        }
     }
     
     func test_DatabaseReader_dumpTables_custom_format() throws {
         let dbQueue = try makeRugbyDatabase()
-        assertSnapshot(of: dbQueue, as: .dumpTables(["player", "team"], format: .list(header: true)))
+        assertInlineSnapshot(of: dbQueue, as: .dumpTables(["player", "team"], format: .list(header: true))) {
+            """
+            player
+            id|teamId|name
+            1|FRA|Antoine Dupond
+            2|ENG|Owen Farrell
+            3||Tartempion
+
+            team
+            id|name|color
+            ENG|England Rugby|white
+            FRA|XV de France|blue
+
+            """
+        }
     }
     
     func test_SQL() throws {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
-            assertSnapshot(
+            assertInlineSnapshot(
                 of: "SELECT * FROM player ORDER BY id",
-                as: .dump(db))
+                as: .dump(db)) {
+                """
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+                - id: 2
+                  teamId: 'ENG'
+                  name: 'Owen Farrell'
+                - id: 3
+                  teamId: NULL
+                  name: 'Tartempion'
+
+                """
+            }
         }
     }
     
     func test_SQL_custom_format() throws {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
-            assertSnapshot(
+            assertInlineSnapshot(
                 of: "SELECT * FROM player ORDER BY id",
-                as: .dump(db, format: .quote()))
+                as: .dump(db, format: .quote())) {
+                """
+                1,'FRA','Antoine Dupond'
+                2,'ENG','Owen Farrell'
+                3,NULL,'Tartempion'
+
+                """
+            }
         }
     }
     
@@ -66,15 +238,22 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
             let name = "Antoine Dupond"
-            assertSnapshot(
+            assertInlineSnapshot(
                 of: "SELECT * FROM player WHERE name = \(name)",
-                as: .dump(db))
+                as: .dump(db)) {
+                """
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+
+                """
+            }
         }
     }
     
     func test_SQL_multiple_statements() throws {
         try DatabaseQueue().write { db in
-            assertSnapshot(
+            assertInlineSnapshot(
                 of: """
                     CREATE TABLE player(id, name, score);
                     INSERT INTO player VALUES (1, 'Arthur', 1000);
@@ -82,7 +261,19 @@ final class GRDBSnapshotTestingTests: XCTestCase {
                     SELECT * FROM player ORDER BY name;
                     SELECT MAX(score) AS maxScore FROM player;
                     """,
-                as: .dump(db))
+                as: .dump(db)) {
+                """
+                - id: 1
+                  name: 'Arthur'
+                  score: 1000
+                - id: 2
+                  name: 'Barbara'
+                  score: 500
+
+                - maxScore: 1000
+
+                """
+            }
         }
     }
     
@@ -92,7 +283,20 @@ final class GRDBSnapshotTestingTests: XCTestCase {
             let request: SQLRequest<Player> = """
                 SELECT * FROM player ORDER BY id
                 """
-            assertSnapshot(of: request, as: .dump(db))
+            assertInlineSnapshot(of: request, as: .dump(db)) {
+                """
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+                - id: 2
+                  teamId: 'ENG'
+                  name: 'Owen Farrell'
+                - id: 3
+                  teamId: NULL
+                  name: 'Tartempion'
+
+                """
+            }
         }
     }
     
@@ -102,7 +306,22 @@ final class GRDBSnapshotTestingTests: XCTestCase {
             let request: SQLRequest<Player> = """
                 SELECT * FROM player ORDER BY id
                 """
-            assertSnapshot(of: request, as: .dump(db, format: .line(nullValue: "<null>")))
+            assertInlineSnapshot(of: request, as: .dump(db, format: .line(nullValue: "<null>"))) {
+                """
+                    id = 1
+                teamId = FRA
+                  name = Antoine Dupond
+
+                    id = 2
+                teamId = ENG
+                  name = Owen Farrell
+
+                    id = 3
+                teamId = <null>
+                  name = Tartempion
+
+                """
+            }
         }
     }
     
@@ -110,7 +329,20 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
             let request = Player.all()
-            assertSnapshot(of: request, as: .dump(db))
+            assertInlineSnapshot(of: request, as: .dump(db)) {
+                """
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+                - id: 2
+                  teamId: 'ENG'
+                  name: 'Owen Farrell'
+                - id: 3
+                  teamId: NULL
+                  name: 'Tartempion'
+
+                """
+            }
         }
     }
     
@@ -118,7 +350,23 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
             let request = Player.including(required: Player.team)
-            assertSnapshot(of: request, as: .dump(db))
+            assertInlineSnapshot(of: request, as: .dump(db)) {
+                """
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+                  id: 'FRA'
+                  name: 'XV de France'
+                  color: 'blue'
+                - id: 2
+                  teamId: 'ENG'
+                  name: 'Owen Farrell'
+                  id: 'ENG'
+                  name: 'England Rugby'
+                  color: 'white'
+
+                """
+            }
         }
     }
     
@@ -126,7 +374,25 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
             let request = Team.including(all: Team.players)
-            assertSnapshot(of: request, as: .dump(db))
+            assertInlineSnapshot(of: request, as: .dump(db)) {
+                """
+                - id: 'ENG'
+                  name: 'England Rugby'
+                  color: 'white'
+                - id: 'FRA'
+                  name: 'XV de France'
+                  color: 'blue'
+
+                players
+                - id: 1
+                  teamId: 'FRA'
+                  name: 'Antoine Dupond'
+                - id: 2
+                  teamId: 'ENG'
+                  name: 'Owen Farrell'
+
+                """
+            }
         }
     }
 
@@ -134,7 +400,17 @@ final class GRDBSnapshotTestingTests: XCTestCase {
         let dbQueue = try makeRugbyDatabase()
         try dbQueue.read { db in
             let request = Team.including(all: Team.players)
-            assertSnapshot(of: request, as: .dump(db, format: .json()))
+            assertInlineSnapshot(of: request, as: .dump(db, format: .json())) {
+                """
+                [{"id":"ENG","name":"England Rugby","color":"white"},
+                {"id":"FRA","name":"XV de France","color":"blue"}]
+
+                players
+                [{"id":1,"teamId":"FRA","name":"Antoine Dupond"},
+                {"id":2,"teamId":"ENG","name":"Owen Farrell"}]
+
+                """
+            }
         }
     }
 
