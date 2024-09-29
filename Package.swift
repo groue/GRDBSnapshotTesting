@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -18,8 +18,8 @@ let package = Package(
             targets: ["GRDBSnapshotTesting"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.21.0"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.14.1"),
+        .package(url: "https://github.com/groue/GRDB.swift", from: "7.0.0-beta"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.5"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
