@@ -1,4 +1,5 @@
 import GRDB
+import SQLite3
 
 /// A GRDB dump format suited for snapshot testing, that prints one line
 /// per database value, formatting values as SQL literals.
