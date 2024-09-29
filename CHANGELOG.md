@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.4.2
+
+Released on 2024/09/29
+
+- **Fixed**: Have SPI build Swift 6 documentation
+
 ## v0.4.1
 
 Released on 2024/09/29
