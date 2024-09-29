@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.4.0
+
+Released on 2024/09/29
+
+Support for GRDB 7.0.0-beta by [@groue](https://github.com/groue) in [#4](https://github.com/groue/GRDBSnapshotTesting/pull/4)
+
 ## v0.3.0
 
 Released on 2023/10/29
