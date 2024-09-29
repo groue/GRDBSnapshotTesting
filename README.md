@@ -2,7 +2,7 @@
 
 **The snapshot testing library for GRDB**
 
-**Requirements**: iOS 13.0+ / macOS 10.15+ / tvOS 13.0+ / watchOS 6.0+ &bull; Swift 6+ / Xcode 16+
+**Requirements**: iOS 13.0+ / macOS 10.15+ / tvOS 13.0+ / watchOS 7.0+ &bull; Swift 6+ / Xcode 16+
 
 📖 **[Documentation]**
 
