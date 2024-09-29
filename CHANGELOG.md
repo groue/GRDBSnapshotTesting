@@ -1,10 +1,16 @@
 # Release Notes
 
+## v0.4.1
+
+Released on 2024/09/29
+
+- **Fixed**: Bumped the minimal watchOS version to 7.0
+
 ## v0.4.0
 
 Released on 2024/09/29
 
-Support for GRDB 7.0.0-beta by [@groue](https://github.com/groue) in [#4](https://github.com/groue/GRDBSnapshotTesting/pull/4)
+- **Breaking Change**: Depend on GRDB 7.0.0-beta+ by [@groue](https://github.com/groue) in [#4](https://github.com/groue/GRDBSnapshotTesting/pull/4)
 
 ## v0.3.0
 
